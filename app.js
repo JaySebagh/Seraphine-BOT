@@ -31,10 +31,11 @@ client.on('message', async msg => {
         }
     }
 
-    let songs = [];
+    
 
     // play a song
-    if(msg.content.toLocaleLowerCase().startsWith((prefix + 'play') || (prefix + 'p'))){
+    let songReq = msg.content.toLocaleLowerCase()
+    if(songReq.startsWith(prefix + 'play') || songReq.startsWith(prefix + 'p')){
         let args = msg.content.split(" ");
         let url = args[1];
 
@@ -43,6 +44,15 @@ client.on('message', async msg => {
         if(!verify) msg.reply('Invalid YouTube Link');
 
         let songData = await ytdl.getInfo(url);
+
+        let connection = await msg.member.voice.channel.join();
+        connection.play(ytdl(url), { filter: 'audioonly', quality: 'highest' });
+
+        msg.channel.send(`Now Playing ${songData.videoDetails.title}`)
+    }
+
+    if(songReq.startsWith(prefix + 'leave') || songReq.startsWith(prefix + 'quit') || songReq.startsWith(prefix + 'q')){
+        msg.member.voice.channel.leave();
     }
 })
 
